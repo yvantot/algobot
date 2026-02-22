@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 
-// 1. Define the Scene
 class MainScene extends Phaser.Scene {
 	constructor() {
 		super("MainScene");
@@ -16,11 +15,10 @@ class MainScene extends Phaser.Scene {
 	}
 }
 
-// 2. Export the function that main.js is looking for
 export default function createGame(parentId) {
 	return new Phaser.Game({
 		type: Phaser.AUTO,
-		parent: parentId, // This hooks into the <div id="game">
+		parent: parentId,
 		width: 600,
 		height: 600,
 		backgroundColor: "#0f172a",
