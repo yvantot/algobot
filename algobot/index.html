@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>algobot</title>
+	</head>
+	<body class="bg-slate-900 text-white overflow-hidden">
+		<div class="flex h-screen w-screen p-4 gap-4">
+			<div id="game" class="w-1/2 h-full rounded-lg border-2 border-indigo-500 bg-black"></div>
+
+			<div class="w-1/2 h-full flex flex-col gap-4">
+				<div id="editor" class="h-1/2 rounded-lg border-2 border-emerald-500 bg-slate-900"></div>
+				<div id="blockly" class="h-1/2 rounded-lg border-2 border-orange-500 bg-slate-800"></div>
+			</div>
+		</div>
+		<script type="module" src="/src/main.js"></script>
+	</body>
+</html>
