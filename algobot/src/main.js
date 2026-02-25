@@ -1,16 +1,11 @@
+import { mount } from "svelte";
 import "./index.css";
-import createGame from "./game/game";
-import createEditor from "./editor/codemirror";
-import createBlockly from "./blockly/blockly";
+import { game } from "./game/game.js";
+import App from "./App.svelte";
 
-window.addEventListener("DOMContentLoaded", () => {
-	try {
-		createGame("game");
-		createEditor("editor");
-		createBlockly("blockly");
-
-		console.log("✅ Algobot initialized successfully!");
-	} catch (error) {
-		console.error("❌ Initialization failed:", error);
-	}
+game();
+const app = mount(App, {
+	target: document.getElementById("app"),
 });
+
+export default app;

@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+.btn {
+    @apply grow p-1 px-2 rounded-lg border-gray-700 border-2 max-w-25 hover:bg-gray-700 transition-colors cursor-pointer select-none;
+}
+.select {
+    @apply p-2 border-2 border-gray-700 rounded-lg
+}
+option {
+    color: black;
+}
