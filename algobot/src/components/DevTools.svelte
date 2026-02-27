@@ -1,3 +1,11 @@
+<!-- 
+    This is enough for now, but for future improvement, I suggest:
+    - Timeline editor (so timings is easier to edit)
+    - Copy text is just copy paste, no need to download
+    - KAPLAY to editor, editor to KAPLAY (already exists)
+    - Replay the animation when a property was deleted
+    - Add an image and edit the animation, currently this tool operates on the current
+-->
 <script>
 	import { k } from "../lib/kaplay.js";
 
