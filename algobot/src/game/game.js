@@ -1,14 +1,66 @@
 import { k, init_kaplay } from "../lib/kaplay.js";
 
+const CROP_DATA = {
+	wheat: {
+		duration: 30,
+		reward: 3,
+		weakness: null,
+		strength: null,
+	},
+
+	corn: {
+		duration: 20,
+		reward: 6,
+		weakness: "pest",
+		strength: "adjacency",
+	},
+
+	rice: {
+		duration: 25,
+		reward: 8,
+		weakness: "flood",
+		strength: "storm_resistant",
+	},
+
+	potato: {
+		duration: 35,
+		reward: 15,
+		weakness: "drought",
+		strength: "underground",
+	},
+
+	sugarcane: {
+		duration: 15,
+		reward: 5,
+		weakness: "fire",
+		strength: "regrow",
+	},
+
+	tomato: {
+		duration: 30,
+		reward: 25,
+		weakness: "spoil",
+		strength: "high_demand",
+	},
+};
+
 const FARM_CONFIG = {
+	size_x: 3,
+	size_y: 3,
 	tile_size: 64,
 	gap: 8,
 };
 
 const ROBOT_CONFIG = {
-	action_duration: {
-		move: 0.5,
-	},
+	// All action have an equal duration
+	action_duration: 0.5,
+};
+
+const CropStates = {
+	YOUNG: 0,
+	ADULT: 1,
+	HARVESTABLE: 2,
+	DEAD: 3,
 };
 
 const SoilStates = {
@@ -18,7 +70,7 @@ const SoilStates = {
 };
 
 const farm_cell = {
-	soil: SoilStates.INITIAL, // SoilComp
+	soil: null, // SoilComp
 	plant: null, // PlantComp
 };
 
@@ -26,13 +78,8 @@ const farm_cell = {
 // Plant compose of gridpos, health, plant
 // plantcomp compose of growth state,
 
-const farm_grid = [
-	[0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0],
-];
+// This is only for saving
+const farm_grid = Array.from({ length: FARM_CONFIG.size_y }, () => Array.from({ length: FARM_CONFIG.size_x }, () => ({ soil_state: SoilStates.INITIAL, crop: null })));
 
 export function game() {
 	init_kaplay();
@@ -47,7 +94,9 @@ export function game() {
 	k.scene("farm", () => {
 		const robot = k.add([
 			farmbot(), // []
-			gridpos(farm_grid, 0, 0, FARM_CONFIG.tile_size / 2, FARM_CONFIG.tile_size / 2),
+			gridpos({ x: FARM_CONFIG.size_x, y: FARM_CONFIG.size_y }, 0, 0, FARM_CONFIG.tile_size / 2, FARM_CONFIG.tile_size / 2),
+			actiontimer(),
+			say(),
 			k.sprite("robot"),
 			k.pos(),
 			k.z(1),
@@ -58,21 +107,29 @@ export function game() {
 		const size = 20;
 		const width = 64;
 		const pos = k.vec2(0 - 64 / 2, 0 - 122 / 2);
-		robot.add([k.text(0, { size, width, align: "center" }), k.outline(3), k.z(3), k.pos(pos), k.color(k.GREEN)]);
+		robot.add([k.text(0, { size, width, align: "center" }), k.z(3), k.pos(pos), k.color(k.GREEN)]);
 
-		for (let y = 0; y < farm_grid.length; y++) {
-			for (let x = 0; x < farm_grid[y].length; x++) {
+		k.onKeyPress("1", () => {
+			robot.till();
+		});
+		k.onKeyPress("2", () => {
+			robot.water();
+		});
+
+		for (let y = 0; y < FARM_CONFIG.size_y; y++) {
+			for (let x = 0; x < FARM_CONFIG.size_x; x++) {
 				// Remove k.area() later in tiles, this is for just testing
-				const tile = k.add([
-					k.sprite("soil", { frame: farm_grid[y][x] }), // []
+				const soil_tile = k.add([
+					gridpos({ x: FARM_CONFIG.size_x, y: FARM_CONFIG.size_y }, x, y),
+					soil(0),
+					k.sprite("soil"), // []
 					k.pos(),
-					gridpos(farm_grid, x, y),
 					k.z(0),
 					k.area(),
 				]);
 
-				tile.onClick(() => {
-					robot.jumpTo(x, y, ROBOT_CONFIG.action_duration.move);
+				soil_tile.onClick(() => {
+					robot.botJump(x, y, ROBOT_CONFIG.action_duration);
 				});
 			}
 		}
@@ -92,49 +149,52 @@ function lerpvec2(vec0, vec1, t) {
 }
 
 // Handles the grid movement operations
-function gridpos(grid, startX = 0, startY = 0, offsetX = 0, offsetY = 0) {
-	if (startX < 0 || startX >= grid[0].length || startY < 0 || startY >= grid.length) {
-		k.debug.log("gridpos: Out of bounds");
-		return null;
+function gridpos(grid_size, startX = 0, startY = 0, offsetX = 0, offsetY = 0) {
+	if (startX < 0 || startX >= grid_size.x || startY < 0 || startY >= grid_size.y) {
+		throw new Error("Out of bounds", { grid_size, startX, startY });
 	}
 
 	const CELL_SIZE = FARM_CONFIG.tile_size + FARM_CONFIG.gap;
-	let OFFSET_X = k.width() / 2 - (grid[0].length * CELL_SIZE) / 2;
-	let OFFSET_Y = k.height() / 2 - (grid.length * CELL_SIZE) / 2;
-
-	let gridX = startX;
-	let gridY = startY;
+	let OFFSET_X = k.width() / 2 - (grid_size.x * CELL_SIZE) / 2;
+	let OFFSET_Y = k.height() / 2 - (grid_size.y * CELL_SIZE) / 2;
 
 	return {
+		gridX: startX,
+		gridY: startY,
+
 		id: "gridpos",
 		require: ["pos"],
+
 		add() {
 			this.placeTo(startX, startY);
 		},
 		update() {},
 		destroy() {},
-		inspect() {},
 
 		isWithinBounds(x, y) {
-			if (x < 0 || x >= grid[0].length || y < 0 || y >= grid.length) {
+			if (x < 0 || x >= grid_size.x || y < 0 || y >= grid_size.y) {
 				this.trigger("outofbounds");
 				return false;
 			}
 			return true;
 		},
 
+		gridAxisToWorld() {
+			return k.vec2(this.gridX * CELL_SIZE + offsetX + OFFSET_X, this.gridY * CELL_SIZE + offsetY + OFFSET_Y);
+		},
+
 		placeTo(x, y) {
 			if (!this.isWithinBounds(x, y)) return;
-			gridX = x;
-			gridY = y;
+			this.gridX = x;
+			this.gridY = y;
 
 			this.pos = k.vec2(x * CELL_SIZE + offsetX + OFFSET_X, y * CELL_SIZE + offsetY + OFFSET_Y);
 		},
 
 		jumpTo(x, y, duration) {
 			if (!this.isWithinBounds(x, y)) return;
-			gridX = x;
-			gridY = y;
+			this.gridX = x;
+			this.gridY = y;
 
 			const start_pos = this.pos;
 			const target_pos = k.vec2(x * CELL_SIZE + offsetX + OFFSET_X, y * CELL_SIZE + offsetY + OFFSET_Y);
@@ -214,12 +274,50 @@ function gridpos(grid, startX = 0, startY = 0, offsetX = 0, offsetY = 0) {
 	};
 }
 
+// This component says something and delete itself after sometime
+function say() {
+	return {
+		id: "say",
+		require: ["pos"],
+
+		show(str, opt = {}) {
+			// Make this better later
+			const { duration = 2, size = 16, width = 64 * 2, textcolor = k.WHITE, bgcolor = k.RED, pos } = opt;
+			const text = k.add([k.text(str, { size, width, align: "center" }), k.pos(pos), k.color(textcolor), k.opacity(0), k.timer(), k.z(3), k.animate(), k.scale(1, 1), k.anchor("center")]);
+			text.animate("opacity", [0, 1, 0], { duration, loops: 1 });
+			text.animate("scale", [k.vec2(0.5, 0.5), k.vec2(1, 1)], { duration, loops: 1, easing: k.easings.easeInOutSine });
+			text.animate("pos", [k.vec2(pos), k.vec2(pos.x, pos.y - 40)], { duration, loops: 1, easing: k.easings.easeInOutSine });
+			text.wait(duration, () => {
+				text.destroy();
+			});
+		},
+	};
+}
+
+function actiontimer() {
+	return {
+		id: "actiontimer",
+		is_avail: true,
+
+		startAction(duration) {
+			this.is_avail = false;
+			k.wait(duration, () => {
+				this.is_avail = true;
+				this.trigger("finished");
+			});
+		},
+	};
+}
+
 // Handles the farmbot actions
 function farmbot() {
 	return {
 		id: "farmbot",
 		require: ["gridpos", "sprite"],
 		add() {
+			this.on("finished", () => {
+				k.debug.log("Action finished");
+			});
 			this.on("outofbounds", () => {
 				console.log("Out of bounds from farmbot object!");
 			});
@@ -228,16 +326,110 @@ function farmbot() {
 		destroy() {},
 		inspect() {},
 
-		say(str) {},
+		botJump(x, y, duration) {
+			if (this.is_avail) {
+				this.startAction(ROBOT_CONFIG.action_duration);
+				this.jumpTo(x, y, duration);
+			} else {
+				this.showText("I'm still busy");
+				return;
+			}
+		},
+		showText(str) {
+			const pos = this.gridAxisToWorld();
+			this.show(str, { pos: k.vec2(pos.x, pos.y - 100) });
+		},
+		till() {
+			const soil = k.get("soil").find((soil) => soil.gridX === this.gridX && soil.gridY === this.gridY);
+			if (soil.state === SoilStates.INITIAL) {
+				if (this.is_avail) {
+					this.startAction(ROBOT_CONFIG.action_duration);
+					soil.changeState(SoilStates.READY);
+				} else {
+					this.showText("I'm still busy");
+					return;
+				}
+			} else {
+				this.showText("It's already tilled");
+			}
+		},
+		water() {
+			const soil = k.get("soil").find((soil) => soil.gridX === this.gridX && soil.gridY === this.gridY);
+
+			if (soil.state === SoilStates.READY) {
+				if (this.is_avail) {
+					this.startAction(ROBOT_CONFIG.action_duration);
+					soil.changeState(SoilStates.WATERED);
+				} else {
+					this.showText("I'm still busy");
+					return;
+				}
+			} else {
+				this.showText("It's already watered or not tilled yet");
+			}
+		},
 		plant(name) {},
-		water() {},
 		harvest() {},
 		destroy() {},
 		killbug() {},
 	};
 }
 
+// Handles the soil component
+function soil(state) {
+	return {
+		id: "soil",
+		require: ["gridpos", "sprite"],
+
+		state,
+		add() {
+			this.frame = state;
+		},
+		changeState(state) {
+			this.state = state;
+			this.frame = state;
+		},
+	};
+}
+
 // Handles the plant component
-function crop(name) {
-	return {};
+function crop(type) {
+	const data = CROP_DATA[type];
+
+	return {
+		id: "crop",
+		require: ["gridpos", "sprite"],
+
+		type,
+		age: 0,
+		state: CropStates.YOUNG,
+		duration: data.duration,
+		reward: data.reward,
+		weakness: data.weakness,
+		strength: data.strength,
+
+		harvested: false,
+
+		update() {
+			this.age += dt();
+
+			if (this.age >= this.duration && !this.harvested) {
+				this.trigger("ready");
+			}
+		},
+
+		harvest() {
+			if (this.age < this.duration) return;
+
+			this.harvested = true;
+			this.trigger("harvested", this.reward);
+
+			if (this.strength === "regrow") {
+				this.age = 0;
+				this.harvested = false;
+			} else {
+				this.destroy();
+			}
+		},
+	};
 }
