@@ -277,7 +277,7 @@
 	<div class="flex flex-col gap-2">
 		<p class="font-bold">Objects to animate</p>
 		<p>These are the available objects in the scene, select to animate them</p>
-		<div class="flex gap-2 justify-between">
+		<div class="flex gap-2 justify-between flex-wrap">
 			{#each objs_id as obj_id}
 				<button onclick={() => selectObject(obj_id)} class="btn">{obj_id}</button>
 			{/each}
@@ -295,7 +295,7 @@
 		<p>These are the properties of the object that is animatable</p>
 
 		{#if selected_id && animation[selected_id]}
-			<div class="flex-col flex gap-2 p-2 border-2 border-gray-600 rounded-lg max-w">
+			<div class="flex-col flex gap-2 p-2 border-2 border-gray-600 rounded-lg">
 				<div class="flex flex-col gap-1">
 					<p class="font-bold">Object id: {selected_id}</p>
 					{#each Object.keys(animation[selected_id] ?? {}) as property}
