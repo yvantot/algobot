@@ -1,0 +1,77 @@
+Corrections:
+	- We do not use Phaser5, please refer to our up-to-date tech stacks: https://trello.com/c/J3f5TWYV/15-tech-stacks-system
+	- We use Svelte 5 for frontend, not vanilla HTML, and CSS, although, I think it's not important to say which framework we used.
+	- Our system uses event-driven techniques but it's not relevant because it's not an intended or planned decision. Almost every system are event-driven by default.
+
+
+System Architecture basically asks:
+- What are the main parts of your system?
+- How do they communicate?
+- Where does data flow?
+- What runs where (client, server, database, browser, etc.)?
+
+For Algobot, our system have these layers:
+- Presentation Layer (what the player sees)
+	Game View: Renders the farm, bots, and crops using KAPLAY. Handles user input (clicking, dragging) and forwards commands to the game logic.
+
+	Svelte 5:
+		- Code Editor: Integrated CodeMirror instance with syntax highlighting, auto‑completion, and error checking for text‑based programming.
+		- Blockly Editor: Visual programming interface that generates JavaScript code.
+		- UI Panels: Inventory, quest log, achievement notifications, and documentation viewer.
+- Logic Layer
+	Crop System:
+	- Manages growth stages, water levels, health, and harvest timers.
+	- Implements plant challenges: over‑watering kills crops; crops decay if not harvested quickly; seed drop probability on harvest/destruction.
+	- Interfaces with the event system to trigger random events (e.g., bugs, weather).
+
+	Bot System:
+	- Maintains a list of bots, each with its own program (text or blocks) and execution state.
+	- Receives commands from the bot’s running code and translates them into actions (e.g., moveTo(x,y), water(), harvest()).
+	- Enforces resource constraints (CPU time, availability) to penalize inefficient algorithms.
+
+	Inventory System:
+	- Tracks seeds, harvested crops, currency, and upgrade items.
+	- Handles transactions (buying seeds, selling crops) and integrates with the shop.
+
+	Event System:
+	- Generates random or scripted events (e.g., bug infestation, rain) that affect crops.
+	- Events can be triggered by timers, quest conditions, or player actions.
+
+	Quest System:
+	- Guides the player through programming concepts via step‑by‑step quests.
+	- Quests check conditions (e.g., “write a loop”, “use a variable”) and reward the player upon completion.
+	Achievement/Progression System:
+	- Tracks player milestones (e.g., number of loops written, crops harvested) and unlocks achievements that provide rewards or UI flair.
+
+- Execution & AI Layer
+	JS-Interpreter:
+	- Safely executes the JavaScript code generated from the text or block editor.
+	- Provides a controlled environment with injected API functions (e.g., move(), water()) that interact with the bot system.
+	- Supports step‑by‑step debugging for educational purposes.
+	- To simulate multiple bots running concurrently without blocking the UI, each bot’s interpreter runs seperately.	
+
+	Adaptive Difficulty (RNN + DQN):
+	- A model combines an RNN (to capture player behavior sequences) and a DQN (to adjust game parameters).
+
+- Data Layer
+	IndexedDB
+	- Capture game state by serializing data and storing them as JSON data in IndexedDB
+
+	JSONbin (not sure if this is needed)
+	- Track player's data by sending relevant game user data to be used for study in configured JSONbin account
+
+------------- TO BE FINALIZED ------------------
+- Backend Services (Node.js)
+Currently, our application stores everything locally, but what if user just needs to create an account so they can load their game state everywhere? It would also look more professional.
+	- Authentication: User login via OAuth or email/password.
+	- User Profiles: Store game progress, achievements, and settings.
+	- Cloud Saves: Allow players to resume games across devices.
+	- Analytics: Collect anonymized data for tracking and for improving adaptive models and quest design.
+
+Data Flow
+	- Player writes code → CodeMirror/Blockly produces JavaScript → JS-Interpreter executes the code.
+	- Bot actions (e.g., water()) are executed inside JS-Interpreter, Bot system validates and updates game state.
+	- Game state changes trigger reactive UI updates and are persisted to backend (if online).
+	- Event system periodically generates events → Crop system applies effects → Player must adapt their code.
+	- Quest system monitors state changes and player code patterns → Completing a quest grants rewards.
+	- Adaptive difficulty model continuously collects player metrics → Adjusts game parameters (e.g., water sensitivity, event frequency).
