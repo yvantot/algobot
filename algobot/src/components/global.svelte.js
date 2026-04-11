@@ -11,4 +11,6 @@ export const Personalize = $state({
 export const Modals = $state({
 	[ModalTypes.LEVEL_REWARDS]: false,
 	[ModalTypes.FARM_PERSONALIZE]: false,
+	[ModalTypes.RESEARCH_TREE]: false,
 });
+

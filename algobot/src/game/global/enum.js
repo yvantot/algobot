@@ -25,6 +25,7 @@ export const CropTypes = {
 export const ModalTypes = {
 	LEVEL_REWARDS: 0,
 	FARM_PERSONALIZE: 1,
+	RESEARCH_TREE: 2,
 };
 
 export const RewardTypes = {

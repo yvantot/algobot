@@ -1,7 +1,6 @@
-/** biome-ignore-all lint/correctness/noInnerDeclarations: <explanation> */
 while (true) {
-	for (var y = 0; y < rows; y++) {
-		for (var x = 0; x < columns; x++) {
+	for (var y = 0; y < rows - 1; y++) {
+		for (var x = 0; x < columns - 1; x++) {
 			bot.jump(y, x);
 
 			if (!bot.is_tilled()) {

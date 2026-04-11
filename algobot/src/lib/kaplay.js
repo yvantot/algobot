@@ -10,9 +10,9 @@ export function initKaplay() {
 		touchToMouse: true,
 		global: false,
 
-		height: 500, // Math.round(innerHeight / 8) * 8
-		width: 500, // Math.round(innerWidth / 8) * 8
-		pixelDensity: 1, // change this to 2
+		height:  Math.round(innerHeight / 8) * 8,
+		width: Math.round(innerWidth / 8) * 8,
+		pixelDensity: 2, // change this to 2
 		crisp: false, // change this to false
 	});
 

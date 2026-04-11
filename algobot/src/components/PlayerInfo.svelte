@@ -43,7 +43,7 @@
   }
 </script>
 
-<div id="player-info" class="inline-flex items-center text-slate-700 select-none">
+<div id="player-info" class="inline-flex items-center text-slate-700 select-none w-[290px]">
   <!-- Avatar Frame -->
   <div
     onclick={(e) => {
@@ -145,7 +145,8 @@
   }
 
   .enter-anim {
-    animation: scaleup 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), subtle-rotate 0.3s ease-in-out infinite alternate;
+    animation:
+      scaleup 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+      subtle-rotate 0.3s ease-in-out infinite alternate;
   }
-
 </style>

@@ -2,6 +2,9 @@
   import { DOCUMENT_DATA as data, TYPE_COLORS } from "../game/global/global.js";
 
   let current_menu = $state("syntax");
+  let unlocked_count = $derived(
+    Object.values(data[current_menu]).filter(item => item.is_unlocked).length
+  );
 
   function toggleMenu(name) {
     current_menu = name;
@@ -21,11 +24,15 @@
     </div>
     <div class="flex flex-col gap-2 flex-grow overflow-y-scroll h-[85vh]">
       {#each Object.keys(data[current_menu]) as name}
+        {@const val = data[current_menu][name]}
         <div class="flex flex-col border-2 border-slate-400 rounded-lg p-2 gap-2">
           <div class="flex gap-2 items-center justify-between">
             <p class="font-bold" style="font-family: 'Courier Prime'">{name}</p>
             <p class="font-bold p-1 px-2 text-xs bg-[#262b36] rounded scale-90" style={"color:" + TYPE_COLORS[data[current_menu][name].type]}>{data[current_menu][name].type}</p>
           </div>
+          {#if current_menu === "crops"}
+          <img class="w-10 h-10 object-contain" src={val.icon} alt="RAR"/>
+          {/if}
           <p>{data[current_menu][name].definition}</p>
           <pre class="overflow-x-auto code p-2 bg-gray-200 rounded-lg">{data[current_menu][name].example}</pre>
           {#if data[current_menu][name]?.note != null}

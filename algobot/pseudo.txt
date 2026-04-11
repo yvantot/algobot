@@ -1,0 +1,48 @@
+// Reward Calculation Function
+/**
+ * Calculates the reward for the DQN.
+ * Freshness serves as a proxy for student logic efficiency.
+ * @param {number[]} freshnessYield - Array of yield percentages (0 to 1)
+ * @param {number} timeSpent - Time in seconds
+ * @param {number} errorCount - Number of syntax or logic errors
+ * @returns {number} The calculated reward value
+ */
+function calculateFlowReward(freshnessYield, timeSpent, errorCount) {
+    // Calculate the average freshness score
+    const totalFreshness = freshnessYield.reduce((sum, val) => sum + val, 0);
+    const freshnessScore = freshnessYield.length > 0 ? totalFreshness / freshnessYield.length : 0;
+
+    // Logic Wall indicator: High error count + High time spent (e.g., 300 seconds / 5 mins)
+    const isStuck = errorCount > 5 && timeSpent > 300;
+
+    let reward;
+
+    if (isStuck) {
+        // Negative reward to encourage the AI to "Help" (Mitigate Logic Wall)
+        reward = -1.0;
+    } else if (freshnessScore >= 0.7 && freshnessScore <= 0.9) {
+        // The 'Flow Zone': Optimal engagement
+        reward = 1.0;
+    } else if (freshnessScore > 0.9) {
+        // Too easy (Boredom): Encourage the AI to "Challenge" the player
+        reward = 0.2;
+    } else {
+        // General underperformance
+        reward = -0.5;
+    }
+
+    return reward;
+}
+
+// Implementation with the DQN Agent
+// Get the next action from the DQN agent based on the RNN's hidden state
+const action = dqnAgent.act(rnnHiddenState);
+
+// Apply the difficulty adjustment in the Algobot environment
+if (action === "SPAWN_PESTS") {
+    console.log("Player is bored! Triggering pest invasion...");
+    algobot.eventSystem.trigger("pest_invasion");
+} else if (action === "RAIN_HELP") {
+    console.log("Player is hitting a logic wall. Triggering helpful rain...");
+    algobot.eventSystem.trigger("rain");
+}

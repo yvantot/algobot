@@ -24,6 +24,6 @@
     "@tailwindcss/vite": "^4.2.0",
     "blockly": "^12.4.1",
     "codemirror": "^6.0.2",
-    "kaplay": "^4000.0.0-alpha.26"
+    "kaplay": "^3001.0.19"
   }
 }

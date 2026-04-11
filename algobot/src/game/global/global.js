@@ -138,22 +138,97 @@ export const INVENTORY = {
 	},
 };
 
+
 export const DOCUMENT_DATA = {
+	crops: {
+		wheat: {
+			definition: "A basic, reliable crop. Perfect for learning the fundamentals of tilling and planting.",
+			icon: "/sprites/icon_wheat.png",
+			strength: "None",
+			weakness: "None",
+			tips: "Use this to practice your first bot.plant() and bot.water() sequences.",
+			type: "crop",
+			is_unlocked: true,
+			tier: 1,
+			cs_concept: "Sequential Execution"
+		},
+		corn: {
+			definition: "A social crop that grows better when crowded together.",
+			icon: "/sprites/icon_corn.png",
+			strength: "Faster growth (-2s) for every adjacent corn plant.",
+			weakness: "Pest Infestation",
+			tips: "This is the perfect time to use 'for' loops to plant long rows of corn at once.",
+			type: "crop",
+			is_unlocked: false,
+			tier: 2,
+			cs_concept: "Loops & Iteration"
+		},
+		rice: {
+			definition: "A hardy grain that thrives in wet conditions but is sensitive to water levels.",
+			icon: "/sprites/icon_rice.png",
+			strength: "Storm-resistant (won't be damaged by heavy rain).",
+			weakness: "Flood (will die if water levels stay too high).",
+			tips: "Use 'if' statements to check weather conditions before deciding to water.",
+			type: "crop",
+			is_unlocked: false,
+			tier: 3,
+			cs_concept: "Conditional Statements"
+		},
+		potato: {
+			definition: "A slow-growing but highly valuable tuber that grows safely underground.",
+			icon: "/sprites/icon_potato.png",
+			strength: "Underground (immune to surface enemies and birds).",
+			weakness: "Drought (requires consistent moisture to develop).",
+			tips: "A long duration means high reward. Think about the efficiency of your code while waiting.",
+			type: "crop",
+			is_unlocked: false,
+			tier: 4,
+			cs_concept: "Time–Space Trade-off"
+		},
+		sugarcane: {
+			definition: "A tall grass that keeps providing value as long as it stays standing.",
+			icon: "/sprites/icon_sugarcane.png",
+			strength: "Automatic Regrowth (does not need to be replanted after harvest).",
+			weakness: "Fire (highly flammable and spreads quickly).",
+			tips: "Use a 'while' loop to harvest this repeatedly until a disaster occurs.",
+			type: "crop",
+			is_unlocked: false,
+			tier: 5,
+			cs_concept: "While Loops & Automation"
+		},
+		tomato: {
+			definition: "A delicate fruit that requires precise timing to maximize profit.",
+			icon: "/sprites/icon_tomato.png",
+			strength: "High Market Demand (sells for a premium).",
+			weakness: "Spoilage (will rot if not harvested within a specific time window).",
+			tips: "Your code needs to be responsive. Use events to trigger a harvest exactly when it's ready.",
+			type: "crop",
+			is_unlocked: false,
+			tier: 5,
+			cs_concept: "Events & Timing"
+		},
+	},
 	globals: {
 		bot: {
 			definition: "",
 			example: ``,
 			type: "variable",
+			is_unlocked: true,
+			tier: 0,
 		},
 		rows: {
 			definition: "",
 			example: ``,
 			type: "variable",
+			is_unlocked: false,
+			tier: 1,
 		},
 		columns: {
 			definition: "",
 			example: ``,
 			type: "variable",
+			is_unlocked: false,
+			tier: 1,
 		},
 	},
 	syntax: {
@@ -162,24 +237,23 @@ export const DOCUMENT_DATA = {
 				"A variable stores a value under a name so you can use or change it later.",
 			example: `var speed = 5;\nvar cropName = "wheat";\nvar isReady = true;`,
 			type: "keyword",
-		},
-		const: {
-			definition:
-				"Declares a variable whose value cannot be reassigned. Use it when the value should never change.",
-			example: `const MAX_SPEED = 10;\nconst FARM_NAME = "Green Acres";`,
-			note: "You must assign a value when you declare a 'const'. You can't leave it empty and fill it in later. Also, objects and arrays declared with 'const' can still have their contents changed.",
-			type: "keyword",
+			is_unlocked: false,
+			tier: 1,
 		},
 		if: {
 			definition: "Runs a block of code only if a condition is true.",
 			example: `if (cropCount > 10) {\n  console.log("Plenty of crops!");\n}`,
 			note: "Don't confuse '==' (comparison) with '=' (assignment) inside conditions. Also, a missing curly brace can cause only the first line to be conditional.",
 			type: "keyword",
+			is_unlocked: false,
+			tier: 1,
 		},
 		else: {
 			type: "keyword",
 			definition: "Runs a block of code when the 'if' condition is false.",
 			example: `if (isRaining) {\n  console.log("Stay inside.");\n} else {\n  console.log("Go outside.");\n}`,
+			is_unlocked: false,
+			tier: 1,
 		},
 		else_if: {
 			type: "keyword",
@@ -187,6 +261,8 @@ export const DOCUMENT_DATA = {
 				"Checks another condition if the previous 'if' was false. You can chain multiple 'else if' blocks together.",
 			example: `if (score >= 90) {\n  console.log("A");\n} else if (score >= 75) {\n  console.log("B");\n} else {\n  console.log("C");\n}`,
 			note: "Conditions are checked top to bottom and stop at the first true one. Order matters, putting a broader condition before a narrower one can make the narrower one unreachable.",
+			is_unlocked: false,
+			tier: 3,
 		},
 		"!": {
 			type: "keyword",
@@ -194,6 +270,8 @@ export const DOCUMENT_DATA = {
 				"Negates a boolean. For example, true will be false, false will be true.",
 			example: `if (!true) bot.right();`,
 			note: "You must use it syntatically correct in-order to work.",
+			is_unlocked: false,
+			tier: 2,
 		},
 		true: {
 			type: "keyword",
@@ -201,6 +279,8 @@ export const DOCUMENT_DATA = {
 				"Represents a truth value. It means 'yes', 'correct', or 'condition is satisfied'. In programming, true is used to control decisions and logic.",
 			example: `if (true) bot.right();`,
 			note: 'true is not a string. Writing "true" is text, not a boolean value.',
+			is_unlocked: false,
+			tier: 1,
 		},
 		false: {
 			type: "keyword",
@@ -208,6 +288,8 @@ export const DOCUMENT_DATA = {
 				"Represents a false value. It means 'no', 'incorrect', or 'condition is not satisfied'. It is used to stop actions or choose alternative paths.",
 			example: `if (false) bot.left();`,
 			note: "false is not the same as 0 or null, though some languages may treat them similarly in conditions.",
+			is_unlocked: false,
+			tier: 1,
 		},
 		for: {
 			type: "keyword",
@@ -215,12 +297,16 @@ export const DOCUMENT_DATA = {
 				"Repeats a block of code a set number of times using a counter variable.",
 			example: `for (let i = 0; i < 5; i++) {\n  console.log("Step " + i);\n}`,
 			note: "Off-by-one errors are common, double-check whether your condition uses '<' or '<='. Also, forgetting to increment 'i' creates an infinite loop.",
+			is_unlocked: false,
+			tier: 2,
 		},
 		break: {
 			type: "keyword",
 			definition: "Immediately exits a loop or switch statement.",
 			example: `for (let i = 0; i < 10; i++) {\n  if (i === 5) break;\n  console.log(i);\n}`,
 			note: "'break' only exits the innermost loop or switch. If you have nested loops, it won't break out of the outer one.",
+			is_unlocked: false,
+			tier: 3,
 		},
 		continue: {
 			type: "keyword",
@@ -228,12 +314,16 @@ export const DOCUMENT_DATA = {
 				"Skips the rest of the current loop iteration and jumps to the next one.",
 			example: `for (let i = 0; i < 5; i++) {\n  if (i === 2) continue;\n  console.log(i); // prints 0, 1, 3, 4\n}`,
 			note: "Like 'break', 'continue' only affects the innermost loop. Overusing it can make loops harder to read and reason about.",
+			is_unlocked: false,
+			tier: 3,
 		},
 		while: {
 			type: "keyword",
 			definition: "Repeats a block of code as long as a condition stays true.",
 			example: `let water = 10;\nwhile (water > 0) {\n  water--;\n}`,
 			note: "If the condition never becomes false, the loop runs forever and crashes your program. Always make sure something inside the loop moves it toward ending.",
+			is_unlocked: false,
+			tier: 3,
 		},
 		function: {
 			type: "keyword",
@@ -241,6 +331,8 @@ export const DOCUMENT_DATA = {
 				"A reusable named block of code. Define it once, call it as many times as you need.",
 			example: `function greet(name) {\n  console.log("Hello, " + name);\n}\n\ngreet("Alex");`,
 			note: "A function must be called to run, defining it does nothing on its own. Also, variables declared inside a function are not accessible outside of it.",
+			is_unlocked: false,
+			tier: 4,
 		},
 		return: {
 			type: "keyword",
@@ -248,6 +340,8 @@ export const DOCUMENT_DATA = {
 				"Exits a function and optionally sends a value back to whoever called it.",
 			example: `function add(a, b) {\n  return a + b;\n}\n\nlet sum = add(3, 4); // sum is 7`,
 			note: "Any code written after 'return' in the same block will never run. Also, a function without a 'return' statement gives back 'undefined' by default.",
+			is_unlocked: false,
+			tier: 4,
 		},
 		switch: {
 			type: "keyword",
@@ -255,6 +349,8 @@ export const DOCUMENT_DATA = {
 				"Compares a value against multiple specific cases and runs the matching block.",
 			example: `switch (var_num) {\n  case 1:\n    console.log("var_num is 1");\n    break;\n  case 2:\n    console.log("var_num is 2");\n    break;\n  default:\n    console.log("Unknown number!");\n}`,
 			note: "Forgetting 'break' causes 'fall-through', the code keeps running into the next case even if it doesn't match. Always add 'break' unless fall-through is intentional.",
+			is_unlocked: false,
+			tier: 3,
 		},
 	},
 	functions: {
@@ -263,18 +359,24 @@ export const DOCUMENT_DATA = {
 			definition: "",
 			note: "",
 			type: "function",
+			is_unlocked: false,
+			tier: 4,
 		},
 		randi: {
 			parameters: "",
 			definition: "",
 			note: "",
 			type: "function",
+			is_unlocked: false,
+			tier: 4,
 		},
 		randf: {
 			parameters: "",
 			definition: "",
 			note: "",
 			type: "function",
+			is_unlocked: false,
+			tier: 4,
 		},
 	},
 	bot_movement: {
@@ -282,23 +384,31 @@ export const DOCUMENT_DATA = {
 			definition: "Moves the bot one tile upward from its current position.",
 			example: `bot.up();`,
 			type: "function",
+			is_unlocked: true,
+			tier: 0,
 		},
 		down: {
 			definition: "Moves the bot one tile downward from its current position.",
 			example: `bot.down();`,
 			type: "function",
+			is_unlocked: true,
+			tier: 0,
 		},
 		right: {
 			definition:
 				"Moves the bot one tile to the right from its current position.",
 			example: `bot.right();`,
 			type: "function",
+			is_unlocked: true,
+			tier: 0,
 		},
 		left: {
 			definition:
 				"Moves the bot one tile to the left from its current position.",
 			example: `bot.left();`,
 			type: "function",
+			is_unlocked: true,
+			tier: 0,
 		},
 		jump: {
 			type: "function",
@@ -306,6 +416,8 @@ export const DOCUMENT_DATA = {
 				"Jump the bot directly to a specific tile by its x and y coordinates on the grid.",
 			example: `bot.jump(3, 5); // bot jumps to tile at column 3, row 5`,
 			note: "Make sure the target coordinates are valid tiles on the grid, jumping out of bounds will cause an error.",
+			is_unlocked: false,
+			tier: 1,
 		},
 	},
 	bot_farm_actions: {
@@ -315,6 +427,8 @@ export const DOCUMENT_DATA = {
 				"Makes the bot display a message as a popup above its head. The popup fades in and then fades out automatically.",
 			example: `bot.say("Hello, farmer!");\nbot.say("Crop is ready!");`,
 			note: "The message must be a string. say() is great for debugging your bot's logic, use it to confirm what your bot is doing and when.",
+			is_unlocked: true,
+			tier: 0,
 		},
 		till: {
 			type: "function",
@@ -322,6 +436,8 @@ export const DOCUMENT_DATA = {
 				"Prepares the soil on the bot's current tile for planting. The tile must be tilled before a crop can be planted on it.",
 			example: `bot.till();`,
 			note: "You cannot plant on a tile that hasn't been tilled first.",
+			is_unlocked: true,
+			tier: 0,
 		},
 		water: {
 			type: "function",
@@ -329,6 +445,8 @@ export const DOCUMENT_DATA = {
 				"Waters the soil on the bot's current tile. Crops need water to grow.",
 			example: `bot.water();`,
 			note: "Watering a tile that hasn't been planted yet has no effect.",
+			is_unlocked: true,
+			tier: 0,
 		},
 		plant: {
 			type: "function",
@@ -336,18 +454,24 @@ export const DOCUMENT_DATA = {
 				"Plants a specified crop on the bot's current tile. The tile must already be tilled.",
 			example: `bot.plant("wheat");\nbot.plant("carrot");`,
 			note: "You must pass the crop name as a string argument. Planting on an untilled tile will fail.",
+			is_unlocked: true,
+			tier: 0,
 		},
 		harvest: {
 			type: "function",
 			definition: "Harvests the fully grown crop on the bot's current tile.",
 			example: `bot.harvest();`,
 			note: "You can only harvest a crop that is fully grown. Use bot.is_harvestable() to check before harvesting to avoid wasting a command.",
+			is_unlocked: true,
+			tier: 0,
 		},
 		destroy: {
 			type: "function",
 			definition: "Destroys crop that is on the bot's current tile.",
 			example: `bot.destroy();`,
 			note: "This is permanent. Destroying a crop means losing it entirely.",
+			is_unlocked: true,
+			tier: 0,
 		},
 		kill_bug: {
 			type: "function",
@@ -355,6 +479,8 @@ export const DOCUMENT_DATA = {
 				"Eliminates a bug on the bot's current tile. Bugs can damage or destroy your crops if left alone.",
 			example: `bot.kill_bug();`,
 			note: "The bot must be on the same tile as the bug for this to work.",
+			is_unlocked: false,
+			tier: 3,
 		},
 		hold_plant: {
 			type: "function",
@@ -362,6 +488,8 @@ export const DOCUMENT_DATA = {
 				"Picks up the plant on the bot's current tile so it can be carried and placed elsewhere.",
 			example: `bot.hold_plant();`,
 			note: "The bot can only hold one plant at a time. Make sure to drop it with drop_plant() before trying to pick up another.",
+			is_unlocked: false,
+			tier: 4,
 		},
 		drop_plant: {
 			type: "function",
@@ -369,6 +497,8 @@ export const DOCUMENT_DATA = {
 				"Places the plant the bot is currently holding onto the current tile.",
 			example: `bot.drop_plant();`,
 			note: "The bot must be holding a plant for this to do anything. Dropping on an occupied tile may cause unexpected behavior.",
+			is_unlocked: false,
+			tier: 4,
 		},
 	},
 	bot_checks: {
@@ -377,24 +507,32 @@ export const DOCUMENT_DATA = {
 			definition:
 				"Checks whether the bot's current tile has been tilled. Returns true if tilled, false otherwise.",
 			example: `if (bot.is_tilled()) {\n  bot.plant("wheat");\n}`,
+			is_unlocked: false,
+			tier: 1,
 		},
 		is_watered: {
 			type: "function",
 			definition:
 				"Checks whether the bot's current tile has been watered. Returns true if watered, false otherwise.",
 			example: `if (!bot.is_watered()) {\n  bot.water();\n}`,
+			is_unlocked: false,
+			tier: 2,
 		},
 		is_planted: {
 			type: "function",
 			definition:
 				"Checks whether the bot's current tile has a crop planted on it. Returns true if planted, false otherwise.",
 			example: `if (bot.is_planted()) {\n  console.log("Something is growing here.");\n}`,
+			is_unlocked: false,
+			tier: 1,
 		},
 		is_harvestable: {
 			type: "function",
 			definition:
 				"Checks whether the crop on the bot's current tile is fully grown and ready to harvest. Returns true or false.",
 			example: `if (bot.is_harvestable()) {\n  bot.harvest();\n}`,
+			is_unlocked: false,
+			tier: 2,
 		},
 	},
 	shop: {
@@ -402,6 +540,8 @@ export const DOCUMENT_DATA = {
 			type: "function",
 			definition: "",
 			example: "",
+			is_unlocked: false,
+			tier: 2,
 		},
 	},
 };
